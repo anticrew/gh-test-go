@@ -4,6 +4,10 @@ inputs:
     description: The Go version to be installed
     type: string
     required: true
+  go-build-tags:
+    description: Custom build tags to be used in 'go test' command
+    type: string
+    default: ''
   run-shell:
     description: Which shell will be used for run commands
     type: string
@@ -26,7 +30,7 @@ runs:
 
     - name: Run go test
       shell: ${{ inputs.run-shell }}
-      run: go test -cover -coverprofile=coverage.txt ./...
+      run: go test -tags ${{ inputs.go-build-tags }} -cover -coverprofile=coverage.txt ./...
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
