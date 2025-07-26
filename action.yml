@@ -23,7 +23,7 @@ runs:
   using: composite
   steps:
     - name: Set up
-      uses: anticrew/gh-setup-go@master
+      uses: anticrew/gh-setup-go@v0.0.3
       with:
         go-version: ${{ inputs.go-version }}
         run-shell: ${{ inputs.run-shell }}
