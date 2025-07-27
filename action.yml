@@ -1,0 +1,41 @@
+name: Setup Go for Anticrew package
+inputs:
+  go-version:
+    description: The Go version to be installed
+    required: true
+  go-build-tags:
+    description: Custom build tags to be used in 'go test' command
+    default: ''
+  run-shell:
+    description: Which shell will be used for run commands
+    required: false
+    default: 'sh'
+  show-coverage:
+    description: Add comment with coverage details to PR
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up
+      uses: anticrew/gh-setup-go@v1
+      with:
+        go-version: ${{ inputs.go-version }}
+        run-shell: ${{ inputs.run-shell }}
+
+    - name: Run go test
+      shell: ${{ inputs.run-shell }}
+      run: go test -tags ${{ inputs.go-build-tags }} -cover -coverprofile=coverage.txt ./...
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      if: github.event_name == 'pull_request' && inputs.show-coverage
+      with:
+        path: coverage.txt
+
+    - name: Process coverage report
+      uses: fgrosse/go-coverage-report@v1.1.1
+      if: github.event_name == 'pull_request' && inputs.show-coverage
+      with:
+        coverage-file-name: coverage.txt
